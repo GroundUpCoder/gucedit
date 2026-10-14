@@ -2,7 +2,15 @@
 
 A personal text editor based on [VSCodium](https://github.com/VSCodium/vscodium) and Microsoft's MIT-licensed [VS Code source](https://github.com/microsoft/vscode). The workbench, themes, keybindings, language services and extension API remain those of VS Code. GucEdit has its own application identity, icons, profiles and extension installation directories.
 
-This is a private standalone fork retaining VSCodium history. `origin` is `GroundUpCoder/gucedit`; `upstream` is `VSCodium/vscodium`. GitHub does not support making a fork of a public repository private, so this repository is not in GitHub's public fork network.
+This is a public standalone fork retaining VSCodium history. `origin` is `GroundUpCoder/gucedit`; `upstream` is `VSCodium/vscodium`.
+
+## Download and install
+
+Download the macOS Apple Silicon DMG from [GitHub Releases](https://github.com/GroundUpCoder/gucedit/releases/latest). No GitHub login is required. Open the DMG and drag GucEdit into Applications. Quit an existing GucEdit before replacing it.
+
+The initial release is ad-hoc signed for bundle integrity, but is not Developer ID signed or Apple-notarized. If macOS blocks the first launch, use System Settings → Privacy & Security → Open Anyway for GucEdit, as described in [Apple's instructions](https://support.apple.com/102445).
+
+To add the CLI, open GucEdit's Command Palette (Cmd+Shift+P) and run **Shell Command: Install 'gucedit' command in PATH**. Release assets include SHA-256 checksums. Intel Mac, Windows and Linux binaries are not published yet.
 
 ## Build and development
 
@@ -39,6 +47,8 @@ The installer copies the app into `/Applications` and links `~/.local/bin/gucedi
 
 For a packaged macOS Apple Silicon build, the result is `VSCode-darwin-arm64/GucEdit.app`. Linux produces `VSCode-linux-<arch>/`; Windows produces `VSCode-win32-<arch>/`. Builds are unsigned unless you configure your own signing credentials.
 
+Run `./dev/package-macos.sh` after building to create an ad-hoc-signed DMG and SHA-256 checksum in `.gucedit-tools/releases/`. This packages the existing app; it does not rebuild or publish it.
+
 `dev/prepare.sh` and a clean build refuse to overwrite an existing source directory. To compile a prepared checkout, first save any editor changes as patches, then run `GUCEDIT_RESET_SOURCE=yes ./dev/build.sh -s`. This explicitly discards changes inside `vscode/` and reapplies the tracked patches. The source checkout prepared during initial setup is already available locally. A fresh preparation is needed when changing overlays or patches.
 
 `./dev/build.sh -i` selects the independently branded insiders channel. Its patch compatibility depends on the pinned insiders source; stable is the verified starting point. The imported packaging/store scripts are retained for development, but store publication and automatic releases are not configured. Active GitHub Actions only check branding and prepare sources; original upstream workflows are archived in `upstream/workflows/`.
@@ -74,7 +84,7 @@ Extensions come from Open VSX, as in VSCodium. You can also install compatible V
 
 ## Privacy
 
-VSCodium's telemetry-removal patches are retained, product telemetry is disabled, and the editor has no automatic update endpoint. Updates must be built and installed manually until a GucEdit release service exists. Extension downloads and installed extensions can still access the network and have their own privacy policies.
+VSCodium's telemetry-removal patches are retained, product telemetry is disabled, and the editor has no automatic update endpoint. Download updates from GitHub Releases and install them manually, or build from source. Extension downloads and installed extensions can still access the network and have their own privacy policies.
 
 ## Maintaining the fork
 
