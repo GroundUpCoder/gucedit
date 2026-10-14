@@ -180,9 +180,6 @@ else
   setpath "resources/server/manifest" "short_name" "GucEdit"
 fi
 
-# announcements
-replace "s|\\[\\/\\* BUILTIN_ANNOUNCEMENTS \\*\\/\\]|$( tr -d '\n' < ../announcements-builtin.json )|" src/vs/workbench/contrib/welcomeGettingStarted/browser/gettingStarted.ts
-
 ../undo_telemetry.sh
 
 replace 's|Microsoft Corporation|GucEdit|' build/lib/electron.ts
