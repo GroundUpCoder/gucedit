@@ -84,6 +84,8 @@ Extensions come from Open VSX, as in VSCodium. You can also install compatible V
 
 ## Privacy
 
+Desktop extension secrets are kept only in memory for the current window session. GucEdit does not use Electron Safe Storage or the operating system's credential store. Extensions using `context.secrets` can store and retrieve values during that session, but must request credentials again after a window reload or restart. Existing Keychain entries and previously encrypted data are left untouched. External tools such as Git/SSH, and extensions with their own credential-storage implementations, control their own storage independently.
+
 VSCodium's telemetry-removal patches are retained, product telemetry is disabled, and the editor has no automatic update endpoint. Download updates from GitHub Releases and install them manually, or build from source. Extension downloads and installed extensions can still access the network and have their own privacy policies.
 
 ## Maintaining the fork
@@ -96,6 +98,8 @@ VSCodium's telemetry-removal patches are retained, product telemetry is disabled
 - `upstream/stable.json`: pinned editor source; `upstream/README.vscodium.md`: original README.
 
 Run `python3 -m unittest discover -s tests` for identity checks. After preparing the source, run `node --test tests/paths.test.cjs` to exercise its actual user-data resolver for macOS, Windows, Linux, development and explicit overrides.
+
+After installing the editor's dependencies, test session-only secret storage with `vscode/build/node_modules/.bin/esbuild tests/secrets.test.ts --bundle --platform=node --tsconfig=vscode/src/tsconfig.json --outfile=.gucedit-tools/secrets.test.cjs` followed by `node --test .gucedit-tools/secrets.test.cjs`.
 
 Fetch upstream with `git fetch upstream`, review and merge updates into `main`, then prepare fresh sources and repeat checks. Preserve the GucEdit branding layer and unique installer IDs across updates.
 
