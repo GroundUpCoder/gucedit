@@ -60,6 +60,12 @@ Insiders uses `.gucedit-insiders`, `.gucedit-server-insiders` and `GucEdit - Ins
 
 Project `.vscode/` settings, `.code-workspace` files, `vscode` extension APIs and compatibility environment variables keep their established names so projects and extensions continue to work.
 
+## GucEdit defaults
+
+The title-bar Command Center is hidden by default (`window.commandCenter: false`). Command Palette and Quick Open keyboard shortcuts remain available.
+
+On macOS, Ctrl+Tab / Ctrl+Shift+Tab move forward/backward in editor tab order. Cmd+Shift+] / Cmd+Shift+[ use the MRU editor picker, including repeated navigation while holding Cmd. These are built-in defaults, so user settings and keybindings can still override them.
+
 ## Extensions
 
 Extensions come from Open VSX, as in VSCodium. You can also install compatible VSIX files using `gucedit --install-extension path/to/extension.vsix`. Microsoft Marketplace-only extensions and Microsoft-hosted sync/tunnel services are not promised to work in this fork.
