@@ -49,6 +49,22 @@ class BrandingTests(unittest.TestCase):
         ids = [value for channel in channels.values() for value in channel.values()]
         self.assertEqual(len(ids), len(set(ids)))
 
+    def test_ai_configuration_removed_without_affecting_extensions(self):
+        product = branding.brand({
+            'voiceWsUrl': 'wss://upstream.invalid/voice',
+            'agentsTelemetryAppName': 'agents',
+            'builtInExtensionsEnabledWithAutoUpdates': ['GitHub.copilot-chat', 'vscode.git'],
+            'extensionsEnabledWithApiProposalVersion': ['GitHub.copilot-chat', 'GitHub.vscode-pull-request-github'],
+            'extensionEnabledApiProposals': {'GitHub.copilot': ['chat'], 'vscode.git': ['scm']},
+            'trustedExtensionAuthAccess': {'github': ['GitHub.copilot-chat', 'vscode.github-authentication']},
+        }, 'stable')
+        self.assertNotIn('voiceWsUrl', product)
+        self.assertNotIn('agentsTelemetryAppName', product)
+        self.assertEqual(product['builtInExtensionsEnabledWithAutoUpdates'], ['vscode.git'])
+        self.assertEqual(product['extensionEnabledApiProposals'], {'vscode.git': ['scm']})
+        self.assertEqual(product['trustedExtensionAuthAccess']['github'], ['vscode.github-authentication'])
+        self.assertEqual(product['extensionsEnabledWithApiProposalVersion'], ['GitHub.vscode-pull-request-github'])
+
     def test_unknown_channel_fails(self):
         with self.assertRaises(ValueError):
             self.product('typo')

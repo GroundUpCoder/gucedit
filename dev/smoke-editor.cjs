@@ -33,6 +33,12 @@ exports.activate = async context => {
   const logger = vscode.env.createTelemetryLogger(sender);
   logger.logUsage('test'); logger.logError(new Error('synthetic')); logger.dispose();
   checks.push('telemetry remains inert with settings enabled');
+  assert.deepEqual(await vscode.lm.selectChatModels(), []);
+  assert.equal(context.languageModelAccessInformation.canSendRequest({}), false);
+  assert.throws(() => vscode.chat.createChatParticipant('smoke', () => {}), /not available/);
+  const commands = await vscode.commands.getCommands(true);
+  for (const id of ['workbench.action.chat.open', 'workbench.action.quickchat.toggle', 'scm.editor.triggerSetup']) assert.ok(!commands.includes(id), 'AI command still registered: '+id);
+  checks.push('AI APIs disabled');
   await context.secrets.store('sample', 'synthetic'); assert.equal(await context.secrets.get('sample'), 'synthetic');
   await context.secrets.delete('sample'); checks.push('session secret API');
   const folder=vscode.workspace.workspaceFolders[0].uri;
@@ -61,6 +67,15 @@ exports.activate = async context => {
   term.sendText('printf gucedit-terminal-ok > '+JSON.stringify(marker));
   for(let i=0;i<60&&!fs.existsSync(marker);i++)await wait(200);
   assert.equal(fs.readFileSync(marker,'utf8'),'gucedit-terminal-ok');term.dispose();checks.push('integrated terminal');
+  const taskMarker=path.join(folder.fsPath,'task-result');
+  const task=new vscode.Task({type:'shell'},vscode.workspace.workspaceFolders[0],'GucEdit smoke','gucedit-test',new vscode.ShellExecution('printf gucedit-task-ok > '+JSON.stringify(taskMarker)));
+  await vscode.tasks.executeTask(task);
+  for(let i=0;i<60&&!fs.existsSync(taskMarker);i++)await wait(200);
+  assert.equal(fs.readFileSync(taskMarker,'utf8'),'gucedit-task-ok');checks.push('shell tasks');
+  const notebook=await vscode.workspace.openNotebookDocument('jupyter-notebook',new vscode.NotebookData([new vscode.NotebookCellData(vscode.NotebookCellKind.Code,'print(1)','python')]));
+  await vscode.window.showNotebookDocument(notebook);
+  assert.equal(notebook.cellCount,1);checks.push('notebook editor');
+  await vscode.commands.executeCommand('workbench.action.revertAndCloseActiveEditor');
   let debugStarted=false, debugEnded=false;
   const start=vscode.debug.onDidStartDebugSession(()=>debugStarted=true),end=vscode.debug.onDidTerminateDebugSession(()=>debugEnded=true);
   try {
@@ -85,7 +100,15 @@ exports.activate = async context => {
     const result=JSON.parse(fs.readFileSync(report));assert.ok(result.ok,JSON.stringify(result));
     browser=await chromium.connectOverCDP('http://127.0.0.1:9341');
     const page=browser.contexts()[0].pages().find(p=>p.url().includes('workbench'));assert.ok(page);
+    const client=await page.context().newCDPSession(page);
+    const errors=[];
+    client.on('Runtime.exceptionThrown', e=>errors.push(e.exceptionDetails.exception?.description||e.exceptionDetails.text));
+    client.on('Runtime.consoleAPICalled', e=>{if(e.type==='error')errors.push(e.args.map(a=>a.value||a.description||'').join(' '));});
+    await client.send('Runtime.enable');
     assert.equal(await page.locator('.monaco-workbench.modern-ui').count(),0);
+    await page.keyboard.press('Meta+KeyP');
+    await page.locator('.quick-input-widget input').first().fill('sample.ts');
+    await page.keyboard.press('Escape');
     assert.equal(await page.locator('.command-center').count(),0);
     await page.keyboard.press('Meta+Shift+KeyP');
     await page.locator('.quick-input-widget input').first().fill('>View: Toggle Word Wrap');
@@ -94,6 +117,7 @@ exports.activate = async context => {
     await page.waitForFunction(()=>[...document.querySelectorAll('.tab.active')].some(e=>e.textContent.includes('sample.ts')));
     await page.keyboard.press('Control+Tab');
     await page.waitForFunction(()=>[...document.querySelectorAll('.tab.active')].some(e=>e.textContent.includes('README.md')));
+    assert.deepEqual(errors.filter(e=>/NOT registered|UNKNOWN service|Unknown actor|Missing proxy|TypeError|ReferenceError/.test(e)),[], 'Workbench runtime errors');
     console.log('PASS:',result.checks.join(', ')+', classic layout, Command Palette, tab order');
   } finally {
     if(browser)await browser.close();

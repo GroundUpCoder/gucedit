@@ -41,8 +41,20 @@ def brand(product, quality):
             product.setdefault("win32ContextMenu", {}).setdefault(key[:-5], {})["clsid"] = value
         else:
             product[key] = "{{" + value + "}"
-    for key in ("updateUrl", "twitterUrl", "aiConfig", "defaultChatAgent", "configurationSync", "editSessions", "crashReporter", "appCenter", "tasConfig"):
+    for key in ("updateUrl", "twitterUrl", "aiConfig", "defaultChatAgent", "configurationSync", "editSessions", "crashReporter", "appCenter", "tasConfig", "voiceWsUrl", "agentsTelemetryAppName", "sessionsWindowAllowedExtensions"):
         product.pop(key, None)
+    def is_ai_extension(extension_id):
+        return any(word in extension_id.lower() for word in ("copilot", "vscode-commander", "mcp"))
+    for key in ("builtInExtensionsEnabledWithAutoUpdates", "extensionsEnabledWithApiProposalVersion"):
+        product[key] = [item for item in product.get(key, []) if not is_ai_extension(item)]
+    product["extensionEnabledApiProposals"] = {
+        key: value for key, value in product.get("extensionEnabledApiProposals", {}).items()
+        if not is_ai_extension(key)
+    }
+    product["trustedExtensionAuthAccess"] = {
+        key: [item for item in value if not is_ai_extension(item)]
+        for key, value in product.get("trustedExtensionAuthAccess", {}).items()
+    }
     return product
 
 if __name__ == "__main__":
