@@ -27,6 +27,16 @@ npm run watch
 ./scripts/code.sh
 ```
 
+After the macOS build finishes, install the app and CLI:
+
+```sh
+./dev/install-macos.sh
+open /Applications/GucEdit.app
+gucedit .
+```
+
+The installer copies the app into `/Applications` and links `~/.local/bin/gucedit` to its bundled launcher. Ensure `~/.local/bin` is on your PATH. It refuses to overwrite an existing app or an unrelated CLI command; move an older GucEdit app aside before replacing it. You can set `GUCEDIT_APPLICATIONS_DIR` or `GUCEDIT_BIN_DIR` to choose other destinations.
+
 For a packaged macOS Apple Silicon build, the result is `VSCode-darwin-arm64/GucEdit.app`. Linux produces `VSCode-linux-<arch>/`; Windows produces `VSCode-win32-<arch>/`. Builds are unsigned unless you configure your own signing credentials.
 
 `dev/prepare.sh` and a clean build refuse to overwrite an existing source directory. To compile a prepared checkout, first save any editor changes as patches, then run `GUCEDIT_RESET_SOURCE=yes ./dev/build.sh -s`. This explicitly discards changes inside `vscode/` and reapplies the tracked patches. The source checkout prepared during initial setup is already available locally. A fresh preparation is needed when changing overlays or patches.
