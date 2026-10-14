@@ -1,0 +1,8 @@
+diff --git a/src/vs/platform/environment/node/userDataPath.ts b/src/vs/platform/environment/node/userDataPath.ts
+--- a/src/vs/platform/environment/node/userDataPath.ts
++++ b/src/vs/platform/environment/node/userDataPath.ts
+@@ -48,3 +48,3 @@ function doGetUserDataPath(cliArgs: NativeParsedArgs, productName: string): string {
+ 	if (process.env['VSCODE_DEV']) {
+-		productName = 'code-oss-dev';
++		productName = 'gucedit-dev';
+ 	}

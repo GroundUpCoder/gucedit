@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../branding/environment.sh"
 # shellcheck disable=SC1091,SC2129
 
 ### Windows
 # to run with Bash: "C:\Program Files\Git\bin\bash.exe" ./dev/build.sh
 ###
 
-export APP_NAME="VSCodium"
-export ASSETS_REPOSITORY="VSCodium/vscodium"
-export BINARY_NAME="codium"
+export APP_NAME="GucEdit"
+export ASSETS_REPOSITORY="GroundUpCoder/gucedit"
+export BINARY_NAME="gucedit"
 export CI_BUILD="no"
-export GH_REPO_PATH="VSCodium/vscodium"
-export ORG_NAME="VSCodium"
+export GH_REPO_PATH="GroundUpCoder/gucedit"
+export ORG_NAME="GucEdit"
 export SHOULD_BUILD="yes"
 export SKIP_ASSETS="yes"
 export SKIP_BUILD="no"
@@ -22,8 +23,8 @@ export VSCODE_SKIP_NODE_VERSION_CHECK="yes"
 while getopts ":ilops" opt; do
   case "$opt" in
     i)
-      export ASSETS_REPOSITORY="VSCodium/vscodium-insiders"
-      export BINARY_NAME="codium-insiders"
+      export ASSETS_REPOSITORY="GroundUpCoder/gucedit"
+      export BINARY_NAME="gucedit-insiders"
       export VSCODE_QUALITY="insider"
       ;;
     l)
@@ -82,7 +83,11 @@ echo "VSCODE_LATEST=\"${VSCODE_LATEST}\""
 echo "VSCODE_QUALITY=\"${VSCODE_QUALITY}\""
 
 if [[ "${SKIP_SOURCE}" == "no" ]]; then
-  rm -rf vscode* VSCode*
+  if [[ -d vscode ]]; then
+    echo "vscode/ already exists. Use -s to rebuild only after saving source changes as patches, or move vscode/ aside." >&2
+    exit 1
+  fi
+  rm -rf VSCode*
 
   . get_repo.sh
   . version.sh
@@ -109,6 +114,10 @@ if [[ "${SKIP_BUILD}" == "no" ]]; then
   if [[ "${SKIP_SOURCE}" != "no" ]]; then
     cd vscode || { echo "'vscode' dir not found"; exit 1; }
 
+    if [[ -n "$(git status --porcelain)" && "${GUCEDIT_RESET_SOURCE:-no}" != "yes" ]]; then
+      echo "Source has changes. Save them as patches; set GUCEDIT_RESET_SOURCE=yes to explicitly discard prepared source changes." >&2
+      exit 1
+    fi
     git add .
     git reset -q --hard HEAD
 
@@ -127,9 +136,9 @@ if [[ "${SKIP_BUILD}" == "no" ]]; then
     mkdir -p ~/.gyp
 
     if [[ -f "${HOME}/.gyp/include.gypi" ]]; then
-      mv ~/.gyp/include.gypi ~/.gyp/include.gypi.pre-vscodium
+      mv ~/.gyp/include.gypi ~/.gyp/include.gypi.pre-gucedit
     else
-      echo "{}" > ~/.gyp/include.gypi.pre-vscodium
+      echo "{}" > ~/.gyp/include.gypi.pre-gucedit
     fi
 
     cp ./build/osx/include.gypi ~/.gyp/include.gypi
@@ -138,7 +147,7 @@ if [[ "${SKIP_BUILD}" == "no" ]]; then
   . build.sh
 
   if [[ -f "./include_${OS_NAME}.gypi" ]]; then
-    mv ~/.gyp/include.gypi.pre-vscodium ~/.gyp/include.gypi
+    mv ~/.gyp/include.gypi.pre-gucedit ~/.gyp/include.gypi
   fi
 
   if [[ "${VSCODE_LATEST}" == "yes" ]]; then

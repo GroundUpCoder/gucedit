@@ -3,7 +3,7 @@
 
 exists() { type -t "$1" &> /dev/null; }
 
-export APP_NAME="VSCodium"
+export APP_NAME="GucEdit"
 export CI_BUILD="no"
 export OS_NAME="linux"
 export SHOULD_BUILD="yes"
@@ -43,7 +43,11 @@ echo "VSCODE_ARCH=\"${VSCODE_ARCH}\""
 echo "VSCODE_LATEST=\"${VSCODE_LATEST}\""
 echo "VSCODE_QUALITY=\"${VSCODE_QUALITY}\""
 
-rm -rf vscode* VSCode*
+if [[ -d vscode ]]; then
+  echo "Move vscode/ aside to preserve source edits before a clean Docker build." >&2
+  exit 1
+fi
+rm -rf VSCode*
 
 . get_repo.sh
 . build.sh

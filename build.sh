@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/branding/environment.sh"
 # shellcheck disable=SC1091
 
 set -ex

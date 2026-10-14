@@ -12,7 +12,7 @@ echo "Installing debloated packages..."
 echo "---------------------------------------------------------------"
 get-debloated-pkgs --add-common --prefer-nano
 
-echo "Extracting VSCodium binary..."
+echo "Extracting GucEdit binary..."
 echo "---------------------------------------------------------------"
 
 mkdir -p ./AppDir/bin ./AppDir/share/applications
@@ -56,7 +56,7 @@ sed -i \
 
 if [[ "${VSCODE_QUALITY}" == "insider" ]]; then
   export OUTNAME=${APP_NAME}-Insiders-${VERSION}-anylinux-"${ARCH}".AppImage
-  repo="vscodium-insiders"
+  repo="gucedit-insiders"
 else
   export OUTNAME=${APP_NAME}-${VERSION}-anylinux-"${ARCH}".AppImage
   repo=${GITHUB_REPOSITORY#*/}

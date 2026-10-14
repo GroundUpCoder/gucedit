@@ -28,7 +28,9 @@ export -f replace_with_debug
 
 d1=$( date +%s )
 
-if [[ "${OS_NAME}" == "linux" ]]; then
+if [[ "${GUCEDIT_PREPARE_ONLY}" == "yes" ]]; then
+  grep -rl --exclude-dir=.git -E "${SEARCH}" src extensions | xargs -I {} bash -c 'replace_with_debug "${1}" "{}"' _ "${REPLACEMENT}"
+elif [[ "${OS_NAME}" == "linux" ]]; then
   if [[ ${VSCODE_ARCH} == "x64" ]]; then
     ./node_modules/@vscode/ripgrep/bin/rg --no-ignore -l "${SEARCH}" . | xargs -I {} bash -c 'replace_with_debug "${1}" "{}"' _ "${REPLACEMENT}"
   else

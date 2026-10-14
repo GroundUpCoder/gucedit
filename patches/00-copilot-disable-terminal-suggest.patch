@@ -8,7 +8,7 @@ index 0000000..f3c0f9d
 +
 +const codiumInsidersCompletionSpec: Fig.Spec = {
 +	...code,
-+	name: '!!BINARY_NAME!!-insiders',
++	name: 'gucedit-insiders',
 +	description: '!!APP_NAME!! Insiders',
 +};
 +
@@ -23,7 +23,7 @@ index 0000000..1daa1fe
 +
 +const codiumCompletionSpec: Fig.Spec = {
 +	...code,
-+	name: '!!BINARY_NAME!!',
++	name: 'gucedit',
 +	description: '!!APP_NAME!!',
 +};
 +
