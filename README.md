@@ -62,6 +62,8 @@ Project `.vscode/` settings, `.code-workspace` files, `vscode` extension APIs an
 
 ## GucEdit defaults
 
+The classic workbench layout is the default: flat panels and traditional tabs, without the Modern UI card spacing and rounded panel layout. Built-in Copilot chat and agent UI are disabled, the default chat-agent setup is removed, and the secondary sidebar starts hidden.
+
 The title-bar Command Center is hidden by default (`window.commandCenter: false`). Command Palette and Quick Open keyboard shortcuts remain available.
 
 On macOS, Ctrl+Tab / Ctrl+Shift+Tab move forward/backward in editor tab order. Cmd+Shift+] / Cmd+Shift+[ use the MRU editor picker, including repeated navigation while holding Cmd. These are built-in defaults, so user settings and keybindings can still override them.

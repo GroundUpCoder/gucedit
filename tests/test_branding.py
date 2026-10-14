@@ -14,6 +14,7 @@ class BrandingTests(unittest.TestCase):
             'win32ContextMenu': {'x64': {}, 'arm64': {}},
             'updateUrl': 'https://upstream.invalid',
             'configurationSync': {'url': 'https://upstream.invalid'},
+            'defaultChatAgent': {'chatExtensionId': 'GitHub.copilot-chat'},
             'extensionsGallery': {'serviceUrl': 'https://open-vsx.org/vscode/gallery'},
         }, quality)
 
@@ -38,6 +39,7 @@ class BrandingTests(unittest.TestCase):
             product = self.product(quality)
             self.assertNotIn('updateUrl', product)
             self.assertNotIn('configurationSync', product)
+            self.assertNotIn('defaultChatAgent', product)
             self.assertFalse(product['enableTelemetry'])
             self.assertEqual(product['extensionsGallery']['serviceUrl'], 'https://open-vsx.org/vscode/gallery')
             self.assertEqual(product, branding.brand(dict(product), quality))

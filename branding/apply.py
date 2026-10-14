@@ -41,7 +41,7 @@ def brand(product, quality):
             product.setdefault("win32ContextMenu", {}).setdefault(key[:-5], {})["clsid"] = value
         else:
             product[key] = "{{" + value + "}"
-    for key in ("updateUrl", "twitterUrl", "aiConfig", "configurationSync", "editSessions", "crashReporter", "appCenter", "tasConfig"):
+    for key in ("updateUrl", "twitterUrl", "aiConfig", "defaultChatAgent", "configurationSync", "editSessions", "crashReporter", "appCenter", "tasConfig"):
         product.pop(key, None)
     return product
 
